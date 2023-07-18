@@ -1,0 +1,42 @@
+name: "Test build Check Box"
+
+on:
+  workflow_dispatch:
+    inputs:
+      TEST_EVALUATION_REPORT:
+        required: true
+        description: Test evaluation report
+        type: boolean
+      NO_HARD_CODED_CREDENTIALS:
+        required: true
+        description: No hard coded credentials
+        type: boolean
+      SOURCE_CODE_REVIEW:
+        required: true
+        description: Source code review
+        type: boolean
+      BUSINESS_REQUIREMENTS:
+        required: true
+        description: Business requirements
+        type: boolean
+      TEST_CASES_TRACEABILITY:
+        required: true
+        description: Test cases traceability
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Tags: ${{ inputs.SELECT_CONTROL }}"
+  sdlc:
+    if: ${{ (inputs.TEST_EVALUATION_REPORT== true ) ||  (inputs.NO_HARD_CODED_CREDENTIALS== true) || (inputs.SOURCE_CODE_REVIEW== true) || (inputs.BUSINESS_REQUIREMENTS== true) || (inputs.TEST_CASES_TRACEABILITY== true) }}
+    needs: build
+    uses: ./.github/workflows/testcontrols.yaml
+    with:
+      TEST_EVALUATION_REPORT: ${{ inputs.TEST_EVALUATION_REPORT }}
+      NO_HARD_CODED_CREDENTIALS: ${{ inputs.NO_HARD_CODED_CREDENTIALS }}
+      SOURCE_CODE_REVIEW: ${{ inputs.SOURCE_CODE_REVIEW }}
+      BUSINESS_REQUIREMENTS: ${{ inputs.BUSINESS_REQUIREMENTS }}
+      TEST_CASES_TRACEABILITY: ${{ inputs.TEST_CASES_TRACEABILITY }}

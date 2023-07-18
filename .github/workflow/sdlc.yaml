@@ -1,0 +1,48 @@
+name: "Test build"
+
+on:
+  workflow_dispatch:
+    inputs:
+      TEST_EVALUATION_REPORT:
+        required: true
+        Description: Test evaluation report
+        type: boolean
+      NO_HARD_CODED_CREDENTIALS:
+        required: true
+        Description: No hard coded credentials
+        type: boolean
+      SOURCE_CODE_REVIEW:
+        required: true
+        Description: Source code review
+        type: boolean
+      BUSINESS_REQUIREMENTS:
+        required: true
+        Description: Business requirements
+        type: boolean
+      TEST_CASES_TRACEABILITY:
+        required: true
+        Description: Test cases traceability
+        type: boolean
+      SELECT_CONTROL:
+        required: true
+        Description: Select a control for dry run.
+        type: choice
+        options:
+             - TEST_EVALUATION_REPORT
+             - NO_HARD_CODED_CREDENTIALS
+             - SOURCE_CODE_REVIEW
+             - BUSINESS_REQUIREMENTS
+             - TEST_CASES_TRACEABILITY
+
+jobs:
+  log-the-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Log level: $LEVEL"
+          echo "Tags: $TAGS"
+          echo "Environment: $ENVIRONMENT"
+        env:
+          LEVEL: ${{ inputs.TEST_CASES_TRACEABILITY }}
+          TAGS: ${{ inputs.TEST_EVALUATION_REPORT }}
+          ENVIRONMENT: ${{ inputs.NO_HARD_CODED_CREDENTIALS }}

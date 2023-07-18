@@ -1,0 +1,98 @@
+name: "Test build"
+
+on:
+  workflow_dispatch:
+    inputs:
+      TEST_EVALUATION_REPORT:
+        required: true
+        description: Test evaluation report
+        type: boolean
+      NO_HARD_CODED_CREDENTIALS:
+        required: true
+        description: No hard coded credentials
+        type: boolean
+      SOURCE_CODE_REVIEW:
+        required: true
+        description: Source code review
+        type: boolean
+      BUSINESS_REQUIREMENTS:
+        required: true
+        description: Business requirements
+        type: boolean
+      TEST_CASES_TRACEABILITY:
+        required: true
+        description: Test cases traceability
+        type: boolean
+      SELECT_CONTROL:
+        required: true
+        description: Select a control for dry run.
+        type: choice
+        options:
+          - TEST_EVALUATION_REPORT
+          - NO_HARD_CODED_CREDENTIALS
+          - SOURCE_CODE_REVIEW
+          - BUSINESS_REQUIREMENTS
+          - TEST_CASES_TRACEABILITY
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Log level: $LEVEL"
+          echo "Tags: $TAGS"
+          echo "Environment: $ENVIRONMENT"
+          echo "TEST_EVALUATION_REPORT=true" >> $GITHUB_ENV
+          if [[ "${{ inputs.SELECT_CONTROL }}" == "TEST_EVALUATION_REPORT" ]]; then
+             echo "TEST_EVALUATION_REPORT=true" >> $GITHUB_ENV
+          fi
+        env:
+          LEVEL: ${{ inputs.TEST_CASES_TRACEABILITY }}
+          TAGS: ${{ inputs.TEST_EVALUATION_REPORT }}
+          ENVIRONMENT: ${{ inputs.SELECT_CONTROL }}
+          CONTROL: ${{ inputs.SELECT_CONTROL }}
+  sdlcg:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Process Data
+        id: process
+        run: |
+          echo "Tags: ${{ inputs.SELECT_CONTROL }}"
+          echo "source_code_review=false" >> "$GITHUB_ENV"
+          echo "test_evaluation_report=false" >> "$GITHUB_ENV"
+          echo "no_hardcoded_credentials=false" >> "$GITHUB_ENV"
+          echo "business_requirements=false" >> "$GITHUB_ENV"
+          echo "test_cases_traceability=false" >> "$GITHUB_ENV"
+          if [[ "${{ inputs.SELECT_CONTROL }}" == "TEST_EVALUATION_REPORT" ]]; then
+             echo "test_evaluation_report=true" >> "$GITHUB_ENV"
+          fi
+          if [[ "${{ inputs.SELECT_CONTROL }}" == "NO_HARD_CODED_CREDENTIALS" ]]; then
+             echo "source_code_review=true" >> "$GITHUB_ENV"
+          fi
+          if [[ "${{ inputs.SELECT_CONTROL }}" == "SOURCE_CODE_REVIEW" ]]; then
+             echo "no_hardcoded_credentials=true" >> "$GITHUB_ENV"
+          fi
+          if [[ "${{ inputs.SELECT_CONTROL }}" == "BUSINESS_REQUIREMENTS" ]]; then
+             echo "business_requirements=true" >> "$GITHUB_ENV"
+          fi
+          if [[ "${{ inputs.SELECT_CONTROL }}" == "TEST_CASES_TRACEABILITY" ]]; then
+             echo "test_cases_traceability=true" >> "$GITHUB_ENV"
+          fi
+      - name: Process Data 3
+        id: process_twom
+        run: |
+          echo "TEST_EVALUATION_REPORT: ${{ env.test_evaluation_report }}" 
+          echo "NO_HARD_CODED_CREDENTIALS: ${{ env.source_code_review }}" 
+          echo "SOURCE_CODE_REVIEW: ${{ env.no_hardcoded_credentials }}" 
+          echo "BUSINESS_REQUIREMENTS: ${{ env.business_requirements }}" 
+          echo "TEST_CASES_TRACEABILITY: ${{ env.test_cases_traceability }}"
+      - uses: actions/checkout@v2
+      - name: SDLC
+        uses: ./.github/actions/test_controls
+        with:
+          TEST_EVALUATION_REPORT: ${{ env.test_evaluation_report }}
+          NO_HARD_CODED_CREDENTIALS: ${{ env.source_code_review }}
+          SOURCE_CODE_REVIEW: ${{ env.no_hardcoded_credentials }}
+          BUSINESS_REQUIREMENTS: ${{ env.business_requirements }}
+          TEST_CASES_TRACEABILITY: ${{ env.test_cases_traceability }}

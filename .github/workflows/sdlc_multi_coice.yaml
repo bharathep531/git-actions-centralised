@@ -1,0 +1,34 @@
+name: "Test build Clean"
+
+on:
+  workflow_dispatch:
+    inputs:
+      SELECT_CONTROL:
+        required: true
+        description: Select a control for dry run.
+        type: choice
+        options:
+          - ALL
+          - TEST_EVALUATION_REPORT
+          - NO_HARD_CODED_CREDENTIALS
+          - SOURCE_CODE_REVIEW
+          - BUSINESS_REQUIREMENTS
+          - TEST_CASES_TRACEABILITY
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process Data
+        id: process
+        run: |
+          echo "Tags: ${{ inputs.SELECT_CONTROL }}"
+
+  sdlc:
+    needs: build
+    uses: ./.github/workflows/testcontrols.yaml
+    with:
+      TEST_EVALUATION_REPORT: ${{ inputs.SELECT_CONTROL== 'TEST_EVALUATION_REPORT' || inputs.SELECT_CONTROL== 'ALL'}}
+      NO_HARD_CODED_CREDENTIALS:  ${{ inputs.SELECT_CONTROL== 'NO_HARD_CODED_CREDENTIALS' || inputs.SELECT_CONTROL== 'ALL' }}
+      SOURCE_CODE_REVIEW:  ${{ inputs.SELECT_CONTROL== 'SOURCE_CODE_REVIEW' || inputs.SELECT_CONTROL== 'ALL' }}
+      BUSINESS_REQUIREMENTS:  ${{ inputs.SELECT_CONTROL== 'BUSINESS_REQUIREMENTS' || inputs.SELECT_CONTROL== 'ALL' }}
+      TEST_CASES_TRACEABILITY:  ${{ inputs.SELECT_CONTROL== 'TEST_CASES_TRACEABILITY' || inputs.SELECT_CONTROL== 'ALL' }}

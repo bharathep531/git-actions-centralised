@@ -1,0 +1,33 @@
+name: "Test Control action"
+
+on:
+  workflow_call:
+    inputs:
+      TEST_EVALUATION_REPORT:
+        required: true
+        type: boolean
+      NO_HARD_CODED_CREDENTIALS:
+        required: true
+        type: boolean
+      SOURCE_CODE_REVIEW:
+        required: true
+        type: boolean
+      BUSINESS_REQUIREMENTS:
+        required: true
+        type: boolean
+      TEST_CASES_TRACEABILITY:
+        required: true
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Log level: $LEVEL"
+          echo "Tags: $TAGS"
+          echo "Environment: ${{ inputs.TEST_EVALUATION_REPORT }}" 
+          echo "Environment: ${{ inputs.NO_HARD_CODED_CREDENTIALS }}" 
+          echo "Environment: ${{ inputs.SOURCE_CODE_REVIEW }}" 
+          echo "Environment: ${{ inputs.BUSINESS_REQUIREMENTS }}" 
+          echo "Environment: ${{ inputs.TEST_CASES_TRACEABILITY }}"
