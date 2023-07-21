@@ -1,0 +1,9 @@
+name: "Test Control action"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Test
+      shell: bash
+      run: |-
+        echo "Log level: >>>>>>"
