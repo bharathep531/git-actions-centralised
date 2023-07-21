@@ -1,24 +1,5 @@
 name: "Test Control action"
 
-on:
-  workflow_call:
-    inputs:
-      TEST_EVALUATION_REPORT:
-        required: true
-        type: boolean
-      NO_HARD_CODED_CREDENTIALS:
-        required: true
-        type: boolean
-      SOURCE_CODE_REVIEW:
-        required: true
-        type: boolean
-      BUSINESS_REQUIREMENTS:
-        required: true
-        type: boolean
-      TEST_CASES_TRACEABILITY:
-        required: true
-        type: boolean
-
 runs:
   using: "composite"
   steps:
